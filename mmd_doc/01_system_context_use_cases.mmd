@@ -1,0 +1,69 @@
+flowchart LR
+  Farmer[Farmer]
+  Buyer[Buyer]
+  Consultant[Consultant]
+  Admin[Admin]
+  Guest[Guest]
+
+  subgraph SYS[XYZ Company Platform]
+    Auth[Authentication & User Management]
+    Market[Marketplace]
+    Chat[Chat System]
+    Ann[Announcements]
+    Consult[Consultant Portal]
+    Videos[Video Tutorials]
+    Reports[Reports & Analytics]
+    GrapeAI[Image Prediction Server]
+  end
+
+  DB[(MySQL Database)]
+  ChatSrv[(Chat Server)]
+  Storage[(File / Video Storage)]
+  Notif[(Email / SMS / Push Gateway)]
+  Model[(Grape Disease Model)]
+
+  Guest --> Auth
+  Farmer --> Auth
+  Buyer --> Auth
+  Consultant --> Auth
+  Admin --> Auth
+
+  Farmer --> Market
+  Buyer --> Market
+  Buyer --> Chat
+  Consultant --> Chat
+  Admin --> Ann
+  Admin --> Reports
+  Consultant --> Consult
+  Buyer --> Videos
+  Farmer --> Videos
+  Farmer --> GrapeAI
+  Guest --> GrapeAI
+
+  Auth --> DB
+  Market --> DB
+  Chat --> ChatSrv
+  Chat --> DB
+  Ann --> DB
+  Ann --> Notif
+  Consult --> DB
+  Videos --> Storage
+  Reports --> DB
+  GrapeAI --> Model
+  GrapeAI --> Storage
+
+  UC1[[Register / Login]]
+  UC2[[Browse / Buy Products]]
+  UC3[[Chat with Consultant]]
+  UC4[[Publish Announcements]]
+  UC5[[Manage Videos]]
+  UC6[[View Reports]]
+  UC7[[Upload Leaf Image and Predict Disease]]
+
+  Auth --- UC1
+  Market --- UC2
+  Chat --- UC3
+  Ann --- UC4
+  Videos --- UC5
+  Reports --- UC6
+  GrapeAI --- UC7

@@ -1,0 +1,31 @@
+flowchart TB
+  User[End Users]
+  Browser[Web Browser]
+  WebServer[Apache / PHP App]
+  ChatSrv[Python Chat Server]
+  GrapeSrv[FastAPI Grape Disease Server]
+  DB[(MySQL Database)]
+  FileStore[(Uploads / Videos)]
+  Backup[(Backup Storage)]
+  AdminOps[Ops / Admin]
+  Model[(grape_model.h5)]
+
+  User --> Browser
+  Browser --> WebServer
+  Browser --> ChatSrv
+  Browser --> GrapeSrv
+
+  WebServer --> DB
+  WebServer --> FileStore
+  ChatSrv --> DB
+  ChatSrv --> FileStore
+  GrapeSrv --> FileStore
+  GrapeSrv --> Model
+  GrapeSrv --> DB
+
+  DB --> Backup
+  FileStore --> Backup
+  AdminOps --> WebServer
+  AdminOps --> DB
+  AdminOps --> ChatSrv
+  AdminOps --> GrapeSrv

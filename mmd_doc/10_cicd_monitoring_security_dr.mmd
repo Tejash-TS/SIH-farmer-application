@@ -1,0 +1,29 @@
+flowchart LR
+  Dev[Developer Commit]
+  Repo[Git Repository]
+  CI[CI Pipeline]
+  Test[Unit / Integration Tests]
+  Build[Build / Package]
+  Deploy[Deploy to Server]
+  App[Running Application]
+
+  Monitor[Monitoring]
+  Logs[Central Logs]
+  Alerts[Alerts / Notifications]
+
+  Sec[Security Controls]
+  Auth[Auth / Roles]
+  WAF[WAF / Firewall]
+  Secrets[Secrets Management]
+  Backup[Scheduled Backup]
+  DR[Disaster Recovery]
+
+  Dev --> Repo --> CI --> Test --> Build --> Deploy --> App
+  App --> Monitor
+  App --> Logs
+  Monitor --> Alerts
+
+  Sec --> Auth
+  Sec --> WAF
+  Sec --> Secrets
+  App --> Backup --> DR

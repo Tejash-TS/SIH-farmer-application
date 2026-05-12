@@ -1,0 +1,28 @@
+flowchart TD
+  User[User]
+  LoginPage[login.php]
+  RegisterPage[register.php]
+  LogoutPage[logout.php]
+  AuthDAO[users_dao.php]
+  DB[(MySQL DB)]
+  Session[(PHP Session)]
+  RoleRouter{Role Check}
+
+  User --> LoginPage
+  User --> RegisterPage
+  User --> LogoutPage
+
+  LoginPage --> AuthDAO
+  RegisterPage --> AuthDAO
+  AuthDAO --> DB
+
+  LoginPage --> Session
+  Session --> RoleRouter
+
+  RoleRouter --> AdminHome[admin/dashboard.php]
+  RoleRouter --> BuyerHome[buyer/dashboard.php]
+  RoleRouter --> FarmerHome[farmer/dashboard.php]
+  RoleRouter --> ConsultantHome[consultant/dashboard.php]
+
+  LogoutPage --> Session
+  Session -->|destroy| DB

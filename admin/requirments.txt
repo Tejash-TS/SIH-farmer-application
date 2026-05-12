@@ -1,0 +1,25 @@
+// for farmer deatils
+
+1. Personal Details
+
+Full Name
+
+Mobile Number (for OTP login, alerts, updates)
+
+Email Address (optional, if the farmer uses it)
+
+2. Farm Details
+
+Farm Location (village, district, state – can be GPS-based if using a mobile app)
+
+Size of the farm (in acres/hectares)
+
+Type of crops grown (you can preselect “grapes” or allow multiple)
+
+3. Grape Crop Details
+
+Grape variety (optional, but useful for disease-specific models)
+
+Plantation age (in months/years)
+
+Irrigation method (optional)

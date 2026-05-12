@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+tensorflow
+numpy
+pillow
+python-multipart
+fastapi
+uvicorn
+tensorflow
+pillow
+numpy
+gdown

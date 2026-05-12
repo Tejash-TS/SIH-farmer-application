@@ -1,0 +1,12 @@
+sequenceDiagram
+  actor User
+  participant UI as Chat Widget
+  participant Server as chat_server.py
+  participant DAO as Chat storage layer
+  participant DB as MySQL DB
+
+  User->>UI: Send message
+  UI->>Server: websocket/message payload
+  Server->>DAO: persistMessage()
+  DAO->>DB: INSERT message
+  Server-->>UI: broadcast to recipient

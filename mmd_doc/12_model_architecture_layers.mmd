@@ -1,0 +1,39 @@
+flowchart TD
+  A["Input Image<br/>(224, 224, 3)<br/>RGB Normalized [0,1]"]
+  
+  A --> B["Conv2D Layer 1<br/>Filters: Multiple<br/>Kernel: 3x3<br/>Output: (222, 222, F1)"]
+  
+  B --> C["MaxPooling2D<br/>Pool Size: 2x2<br/>Output: (111, 111, F1)<br/>Reduces spatial dims by 50%"]
+  
+  C --> D["Conv2D Layer 2<br/>Filters: Multiple<br/>Kernel: 3x3<br/>Output: (109, 109, F2)"]
+  
+  D --> E["MaxPooling2D<br/>Pool Size: 2x2<br/>Output: (54, 54, F2)<br/>Further reduces spatial dims"]
+  
+  E --> F["Conv2D Layer 3<br/>Filters: Multiple<br/>Kernel: 3x3<br/>Output: (52, 52, F3)"]
+  
+  F --> G["MaxPooling2D<br/>Pool Size: 2x2<br/>Output: (26, 26, F3)<br/>More spatial reduction"]
+  
+  G --> H["Flatten<br/>Converts 3D to 1D<br/>Output: Flattened Vector"]
+  
+  H --> I["Dropout Layer<br/>Rate: ~20-50%<br/>Prevents Overfitting<br/>Randomly zeros activations"]
+  
+  I --> J["Dense Layer 1<br/>Units: 128-256<br/>Activation: ReLU<br/>Feature Extraction"]
+  
+  J --> K["Dense Layer 2 (Output)<br/>Units: 7<br/>Activation: Softmax<br/>Output: Class Probabilities"]
+  
+  K --> L["Classification Result<br/>argmax() → Predicted Class<br/>Confidence: Max Probability %"]
+  
+  L --> M{Prediction}
+  
+  M -->|High Confidence| N["🍇 Healthy<br/>or<br/>Disease Name"]
+  M -->|Lower Confidence| O["⚠️ Review Recommendation"]
+  
+  N --> P["Return to User:<br/>Disease Class<br/>Confidence %<br/>All Class Scores"]
+  O --> P
+  
+  style A fill:#e1f5e1
+  style K fill:#fff3cd
+  style L fill:#cfe2ff
+  style N fill:#d1ecf1
+  style O fill:#f8d7da
+  style P fill:#e7d4f5

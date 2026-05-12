@@ -1,0 +1,33 @@
+flowchart TD
+  User[Farmer / User]
+  Browser[Browser or App UI]
+  FastAPI[main.py / FastAPI]
+  Upload[Upload Image]
+  Preprocess[Preprocess Image]
+  Model[(grape_model.h5)]
+  Predict[TensorFlow Prediction]
+  Response[Prediction Result]
+
+  User --> Browser
+  Browser --> Upload
+  Upload --> FastAPI
+  FastAPI --> Preprocess
+  Preprocess --> Predict
+  Predict --> Model
+  Predict --> Response
+  Response --> Browser
+
+  subgraph API[FastAPI Endpoints]
+    Root[GET /]
+    PredictAPI[POST /predict]
+    Health[GET /health]
+    ModelInfo[GET /model_info]
+  end
+
+  FastAPI --> Root
+  FastAPI --> PredictAPI
+  FastAPI --> Health
+  FastAPI --> ModelInfo
+
+  DB[(Optional persistence / logs)]
+  FastAPI --> DB

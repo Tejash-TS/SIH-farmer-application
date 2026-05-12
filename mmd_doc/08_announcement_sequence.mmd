@@ -1,0 +1,14 @@
+sequenceDiagram
+  actor Admin
+  participant AdminUI as admin/announcements.php
+  participant API as api_announcements.php
+  participant DAO as Announcement DAO
+  participant DB as MySQL DB
+  participant Notify as Notification Gateway
+
+  Admin->>AdminUI: Create announcement
+  AdminUI->>API: POST announcement data
+  API->>DAO: saveAnnouncement()
+  DAO->>DB: INSERT announcement
+  API->>Notify: send email/SMS/push
+  Notify-->>AdminUI: publish success

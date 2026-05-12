@@ -1,0 +1,23 @@
+sequenceDiagram
+  actor User
+  participant Browser
+  participant Login as login.php
+  participant DAO as users_dao.php
+  participant DB as MySQL DB
+  participant Session as PHP Session
+  participant Role as Role Router
+
+  User->>Browser: Enter email/password
+  Browser->>Login: POST credentials
+  Login->>DAO: validateUser()
+  DAO->>DB: SELECT user by email
+  DB-->>DAO: user record + password hash
+  DAO-->>Login: validation result
+
+  alt valid credentials
+    Login->>Session: create session
+    Login->>Role: determine user role
+    Role-->>Browser: redirect to role dashboard
+  else invalid credentials
+    Login-->>Browser: show error
+  end

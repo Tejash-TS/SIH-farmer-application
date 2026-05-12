@@ -1,0 +1,113 @@
+erDiagram
+  USERS {
+    int user_id PK
+    varchar name
+    varchar email
+    varchar password_hash
+    varchar role
+    varchar status
+    datetime created_at
+  }
+
+  ROLES {
+    int role_id PK
+    varchar role_name
+    text permissions
+  }
+
+  SESSIONS {
+    int session_id PK
+    int user_id FK
+    varchar token
+    datetime login_at
+    datetime expires_at
+  }
+
+  ANNOUNCEMENTS {
+    int announcement_id PK
+    int created_by FK
+    varchar title
+    text message
+    varchar target_role
+    datetime created_at
+    datetime published_at
+    varchar status
+  }
+
+  PRODUCTS {
+    int product_id PK
+    int vendor_id FK
+    varchar name
+    text description
+    decimal price
+    int stock_qty
+    varchar status
+  }
+
+  CARTS {
+    int cart_id PK
+    int buyer_id FK
+    datetime updated_at
+  }
+
+  ORDERS {
+    int order_id PK
+    int buyer_id FK
+    decimal total_amount
+    varchar order_status
+    datetime ordered_at
+  }
+
+  ORDER_ITEMS {
+    int item_id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+    decimal unit_price
+  }
+
+  CHAT_THREADS {
+    int thread_id PK
+    int buyer_id FK
+    int consultant_id FK
+    datetime created_at
+  }
+
+  CHAT_MESSAGES {
+    int message_id PK
+    int thread_id FK
+    int sender_id FK
+    text message_text
+    datetime sent_at
+  }
+
+  VIDEOS {
+    int video_id PK
+    int uploaded_by FK
+    varchar title
+    varchar file_path
+    varchar thumbnail_path
+    varchar status
+    datetime uploaded_at
+  }
+
+  REPORTS {
+    int report_id PK
+    int created_by FK
+    varchar report_type
+    text report_data
+    datetime generated_at
+  }
+
+  USERS ||--o{ SESSIONS : has
+  ROLES ||--o{ USERS : assigns
+  USERS ||--o{ ANNOUNCEMENTS : creates
+  USERS ||--o{ PRODUCTS : owns
+  USERS ||--o{ CARTS : owns
+  USERS ||--o{ ORDERS : places
+  ORDERS ||--o{ ORDER_ITEMS : contains
+  PRODUCTS ||--o{ ORDER_ITEMS : included_in
+  USERS ||--o{ CHAT_THREADS : starts
+  CHAT_THREADS ||--o{ CHAT_MESSAGES : contains
+  USERS ||--o{ VIDEOS : uploads
+  USERS ||--o{ REPORTS : generates

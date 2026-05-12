@@ -1,0 +1,56 @@
+flowchart TB
+  subgraph Presentation[Presentation Layer]
+    WebUI[Public Website]
+    AdminUI[Admin Panel]
+    BuyerUI[Buyer Portal]
+    FarmerUI[Farmer Portal]
+    ConsultantUI[Consultant Portal]
+  end
+
+  subgraph Application[Application Layer]
+    AuthSvc[Auth Service]
+    UserSvc[User Service]
+    MarketSvc[Marketplace Service]
+    ChatSvc[Chat Service]
+    AnnSvc[Announcement Service]
+    VideoSvc[Video Service]
+    ReportSvc[Reporting Service]
+    ImageAI[Image Prediction Service]
+  end
+
+  subgraph Data[Data Layer]
+    MySQL[(MySQL DB)]
+    FileStore[(Uploads / Videos)]
+    Cache[(Optional Cache)]
+  end
+
+  subgraph External[External Integrations]
+    ChatServer[(Python Chat Server)]
+    MailSMS[(Email / SMS Gateway)]
+    TensorModel[(TensorFlow / Keras Model)]
+  end
+
+  WebUI --> AuthSvc
+  AdminUI --> UserSvc
+  BuyerUI --> MarketSvc
+  FarmerUI --> MarketSvc
+  ConsultantUI --> ChatSvc
+  ConsultantUI --> VideoSvc
+  FarmerUI --> ImageAI
+  WebUI --> ImageAI
+
+  AuthSvc --> MySQL
+  UserSvc --> MySQL
+  MarketSvc --> MySQL
+  ChatSvc --> ChatServer
+  ChatSvc --> MySQL
+  AnnSvc --> MySQL
+  AnnSvc --> MailSMS
+  VideoSvc --> FileStore
+  VideoSvc --> MySQL
+  ReportSvc --> MySQL
+  ImageAI --> TensorModel
+  ImageAI --> FileStore
+  ImageAI --> MySQL
+
+  Application --> Cache

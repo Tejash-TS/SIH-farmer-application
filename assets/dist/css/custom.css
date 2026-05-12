@@ -1,0 +1,65 @@
+.hover-scale:hover {
+	transform: scale(1.05);
+	transition: transform 0.3s ease;
+	}
+
+	.pulse-text {
+	animation: pulseText 2s infinite;
+	}
+
+	@keyframes pulseText {
+	0% { color: #1e40af; }
+	50% { color: #3b82f6; }
+	100% { color: #1e40af; }
+	}
+
+	.glow-icon {
+	transition: all 0.3s ease-in-out;
+	}
+
+	.glow-icon:hover {
+	filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
+	transform: scale(1.1);
+	}
+
+	.special-card {
+	background: linear-gradient(135deg, #ffffff, #f9fafb);
+	border-radius: 16px;
+	}
+	/* this for loader */ 
+	@keyframes shimmer {
+	  0%   { filter: brightness(1); }
+	  50%  { filter: brightness(1.4); }
+	  100% { filter: brightness(1); }
+	}
+
+	#ajax_loader img {
+	  animation: shimmer 2s ease-in-out infinite;
+	}
+	
+	/* Default AdminLTE / Bootstrap Colors */
+.border-left-primary   { border-left: .25rem solid #007bff !important; }
+.border-left-secondary { border-left: .25rem solid #6c757d !important; }
+.border-left-success   { border-left: .25rem solid #28a745 !important; }
+.border-left-danger    { border-left: .25rem solid #dc3545 !important; }
+.border-left-warning   { border-left: .25rem solid #ffc107 !important; }
+.border-left-info      { border-left: .25rem solid #17a2b8 !important; }
+.border-left-light     { border-left: .25rem solid #f8f9fa !important; }
+.border-left-dark      { border-left: .25rem solid #343a40 !important; }
+
+/* 🔥 Extended Colors (Material / Tailwind Inspired) */
+.border-left-pink      { border-left: .25rem solid #e83e8c !important; }
+.border-left-purple    { border-left: .25rem solid #6f42c1 !important; }
+.border-left-indigo    { border-left: .25rem solid #6610f2 !important; }
+.border-left-teal      { border-left: .25rem solid #20c997 !important; }
+.border-left-cyan      { border-left: .25rem solid #0dcaf0 !important; }
+.border-left-orange    { border-left: .25rem solid #fd7e14 !important; }
+.border-left-amber     { border-left: .25rem solid #ffbf00 !important; }
+.border-left-lime      { border-left: .25rem solid #a3e635 !important; }
+.border-left-emerald   { border-left: .25rem solid #10b981 !important; }
+.border-left-sky       { border-left: .25rem solid #38bdf8 !important; }
+.border-left-violet    { border-left: .25rem solid #8b5cf6 !important; }
+.border-left-rose      { border-left: .25rem solid #f43f5e !important; }
+.border-left-brown     { border-left: .25rem solid #795548 !important; }
+.border-left-silver    { border-left: .25rem solid #adb5bd !important; }
+.border-left-gold      { border-left: .25rem solid #ffd700 !important; }

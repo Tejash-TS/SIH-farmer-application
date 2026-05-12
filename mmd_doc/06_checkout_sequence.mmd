@@ -1,0 +1,20 @@
+sequenceDiagram
+  actor Buyer
+  participant UI as Buyer UI
+  participant Cart as cart.php
+  participant Checkout as checkout.php
+  participant DAO as buyer_dao.php
+  participant DB as MySQL DB
+  participant Order as Orders Module
+
+  Buyer->>UI: Add item to cart
+  UI->>Cart: Save cart updates
+  Cart->>DAO: updateCart()
+  DAO->>DB: INSERT/UPDATE cart items
+
+  Buyer->>UI: Proceed to checkout
+  UI->>Checkout: Submit order request
+  Checkout->>DAO: placeOrder()
+  DAO->>DB: Create order + order items
+  DAO-->>Order: order created
+  Order-->>UI: Order confirmation
