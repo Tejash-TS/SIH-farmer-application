@@ -1,12 +1,8 @@
 services:
 
   phpapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
+    image: tejash727/sih-phpapp:latest
     container_name: phpapp
-
     restart: always
 
     ports:
@@ -21,11 +17,8 @@ services:
       - sih-network
 
   aiprediction:
-    build:
-      context: ./image prdiction server
-
+    image: tejash727/sih-aiprediction:latest
     container_name: aiprediction
-
     restart: always
 
     ports:
@@ -35,42 +28,37 @@ services:
       - sih-network
 
   chatserver:
-    build:
-      context: ./Chat Server
-
+    image: tejash727/sih-chatserver:latest
     container_name: chatserver
-
     restart: always
 
     ports:
-       - "8000:8000"
+      - "8000:8000"
 
     networks:
       - sih-network
 
   mysql:
-   image: mysql:8.0
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
 
-   container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sih
+      MYSQL_ROOT_HOST: "%"
 
-   restart: always
+    command: --default-authentication-plugin=mysql_native_password
 
-   environment:
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_DATABASE: sih
-    MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
 
-   command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./Db_backup_files/sih_03-05-2026.sql:/docker-entrypoint-initdb.d/init.sql
 
-   ports:
-    - "3306:3306"
-
-   volumes:
-    - mysql-data:/var/lib/mysql
-    - ./Db_backup_files/sih_03-05-2026.sql:/docker-entrypoint-initdb.d/init.sql
-
-   networks:
-    - sih-network
+    networks:
+      - sih-network
 
 volumes:
   mysql-data:
