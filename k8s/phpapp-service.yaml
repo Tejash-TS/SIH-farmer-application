@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: phpapp-service
+  namespace: sih
+
+spec:
+  selector:
+    app: phpapp
+
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+
+  type: NodePort

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: chatserver
+  namespace: sih
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: chatserver
+
+  template:
+    metadata:
+      labels:
+        app: chatserver
+
+    spec:
+      containers:
+      - name: chatserver
+        image: tejash727/sih-chatserver:latest
+
+        ports:
+        - containerPort: 8000

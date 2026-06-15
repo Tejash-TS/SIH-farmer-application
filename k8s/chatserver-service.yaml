@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: chatserver
+  namespace: sih
+
+spec:
+  selector:
+    app: chatserver
+
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30000
+
+  type: NodePort

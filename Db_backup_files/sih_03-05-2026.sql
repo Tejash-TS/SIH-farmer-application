@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 04, 2026 at 12:36 AM
+-- Generation Time: May 16, 2026 at 08:08 PM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.18
 
@@ -310,16 +310,7 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`announcement_id`),
   KEY `idx_active_created` (`is_active`,`created_on`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `announcements`
---
-
-INSERT INTO `announcements` (`announcement_id`, `title`, `description`, `target_role`, `sender_id`, `is_active`, `created_on`, `modified_on`, `created_by`, `modified_by`) VALUES
-(1, 'Testing annousment', 'testing description', 'all', 1, 1, '2026-05-03 23:36:26', NULL, 1, NULL),
-(2, 'Testing annousment', 'testing description', 'all', 1, 1, '2026-05-03 23:39:12', NULL, 1, NULL),
-(3, 'Testing annousment', 'testing description', 'all', 1, 1, '2026-05-03 23:45:29', NULL, 1, NULL);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -335,28 +326,7 @@ CREATE TABLE IF NOT EXISTS `announcement_reads` (
   `read_on` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`read_id`),
   UNIQUE KEY `unique_read` (`announcement_id`,`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `announcement_reads`
---
-
-INSERT INTO `announcement_reads` (`read_id`, `announcement_id`, `user_id`, `read_on`) VALUES
-(1, 2, 9, '2026-05-03 23:43:20'),
-(2, 1, 9, '2026-05-03 23:43:21'),
-(3, 2, 10, '2026-05-03 23:44:41'),
-(4, 1, 10, '2026-05-03 23:44:41'),
-(5, 3, 10, '2026-05-03 23:45:35'),
-(6, 3, 9, '2026-05-03 23:50:57'),
-(7, 3, 1, '2026-05-04 00:02:10'),
-(8, 2, 1, '2026-05-04 00:02:10'),
-(9, 1, 1, '2026-05-04 00:02:10'),
-(10, 3, 11, '2026-05-04 00:02:19'),
-(11, 2, 11, '2026-05-04 00:02:19'),
-(12, 1, 11, '2026-05-04 00:02:19'),
-(13, 3, 12, '2026-05-04 00:02:34'),
-(14, 2, 12, '2026-05-04 00:02:34'),
-(15, 1, 12, '2026-05-04 00:02:34');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -368,15 +338,15 @@ DROP TABLE IF EXISTS `buyers`;
 CREATE TABLE IF NOT EXISTS `buyers` (
   `buyer_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `address` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `phone_number` varchar(10) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `address` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone_number` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`buyer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `buyers`
@@ -421,20 +391,7 @@ CREATE TABLE IF NOT EXISTS `chat_messages` (
   PRIMARY KEY (`message_id`),
   KEY `idx_conversation` (`sender_id`,`receiver_id`),
   KEY `idx_created_on` (`created_on`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `chat_messages`
---
-
-INSERT INTO `chat_messages` (`message_id`, `sender_id`, `receiver_id`, `message_text`, `is_read`, `created_on`, `created_by`) VALUES
-(1, 1, 9, 'hii', 0, '2026-05-04 00:21:49', 1),
-(2, 1, 10, 'hii', 0, '2026-05-04 00:22:09', 1),
-(3, 10, 1, 'helo', 0, '2026-05-04 00:22:29', 10),
-(4, 10, 9, 'hii', 0, '2026-05-04 00:28:06', 10),
-(5, 1, 12, 'hii', 0, '2026-05-04 00:30:12', 1),
-(6, 10, 9, 'testing message', 0, '2026-05-04 00:32:32', 10),
-(7, 9, 10, 'testing replay msg', 0, '2026-05-04 00:33:12', 9);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -447,16 +404,16 @@ CREATE TABLE IF NOT EXISTS `communication` (
   `comm_id` int NOT NULL AUTO_INCREMENT,
   `sender_id` int DEFAULT NULL,
   `reciver_id` int DEFAULT NULL,
-  `message` text COLLATE utf8mb4_0900_ai_ci,
-  `is_seen` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
-  `is_reported` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
+  `message` text COLLATE utf8mb4_general_ci,
+  `is_seen` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'N',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
+  `is_reported` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'N',
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   PRIMARY KEY (`comm_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -471,8 +428,8 @@ CREATE TABLE IF NOT EXISTS `consultancy_ratings` (
   `consultant_id` int NOT NULL,
   `farmer_id` int NOT NULL,
   `rating` int DEFAULT NULL,
-  `review` text COLLATE utf8mb4_0900_ai_ci,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `review` text COLLATE utf8mb4_general_ci,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`rating_id`),
@@ -491,21 +448,21 @@ DROP TABLE IF EXISTS `consultancy_services`;
 CREATE TABLE IF NOT EXISTS `consultancy_services` (
   `service_id` int NOT NULL AUTO_INCREMENT,
   `consultant_id` int NOT NULL,
-  `service_name` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` text COLLATE utf8mb4_0900_ai_ci,
+  `service_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
   `price_per_month` decimal(10,2) NOT NULL,
   `duration_months` int DEFAULT '1',
   `max_consultations` int DEFAULT '4',
   `consultation_duration_mins` int DEFAULT '30',
-  `expertise_areas` text COLLATE utf8mb4_0900_ai_ci,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `expertise_areas` text COLLATE utf8mb4_general_ci,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`service_id`),
   KEY `consultant_id` (`consultant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `consultancy_services`
@@ -528,18 +485,18 @@ CREATE TABLE IF NOT EXISTS `consultancy_sessions` (
   `farmer_id` int NOT NULL,
   `session_date` datetime DEFAULT NULL,
   `duration_mins` int DEFAULT '30',
-  `session_status` enum('scheduled','completed','cancelled','no-show') COLLATE utf8mb4_0900_ai_ci DEFAULT 'scheduled',
-  `meeting_link` varchar(500) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `meeting_notes` text COLLATE utf8mb4_0900_ai_ci,
-  `session_feedback` text COLLATE utf8mb4_0900_ai_ci,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `session_status` enum('scheduled','completed','cancelled','no-show') COLLATE utf8mb4_general_ci DEFAULT 'scheduled',
+  `meeting_link` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `meeting_notes` text COLLATE utf8mb4_general_ci,
+  `session_feedback` text COLLATE utf8mb4_general_ci,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`session_id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `consultant_id` (`consultant_id`),
   KEY `farmer_id` (`farmer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -551,19 +508,19 @@ DROP TABLE IF EXISTS `consultants`;
 CREATE TABLE IF NOT EXISTS `consultants` (
   `consultant_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `specialization` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `degree` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `bio` text COLLATE utf8mb4_0900_ai_ci,
-  `license_no` varchar(100) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `specialization` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `degree` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `bio` text COLLATE utf8mb4_general_ci,
+  `license_no` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
-  `profile_image` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `profile_image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`consultant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `consultants`
@@ -583,11 +540,11 @@ CREATE TABLE IF NOT EXISTS `consultents_feedback` (
   `con_feed_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
   `consultent_id` int DEFAULT NULL,
-  `description` text COLLATE utf8mb4_0900_ai_ci,
+  `description` text COLLATE utf8mb4_general_ci,
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   PRIMARY KEY (`con_feed_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -604,7 +561,7 @@ CREATE TABLE IF NOT EXISTS `consultent_rating` (
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   PRIMARY KEY (`cons_rating_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -616,18 +573,18 @@ DROP TABLE IF EXISTS `crop_yield`;
 CREATE TABLE IF NOT EXISTS `crop_yield` (
   `yield_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `crop_type` varchar(100) COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `crop_type` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `area_in_acres` decimal(10,2) DEFAULT NULL,
   `expected_yield` decimal(10,2) DEFAULT NULL,
   `actual_yield` decimal(10,2) DEFAULT NULL,
-  `yield_unit` varchar(50) COLLATE utf8mb4_0900_ai_ci DEFAULT 'kg',
-  `season` varchar(50) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `yield_unit` varchar(50) COLLATE utf8mb4_general_ci DEFAULT 'kg',
+  `season` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `year` int DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`yield_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -638,19 +595,19 @@ CREATE TABLE IF NOT EXISTS `crop_yield` (
 DROP TABLE IF EXISTS `diseases`;
 CREATE TABLE IF NOT EXISTS `diseases` (
   `diseases_id` int NOT NULL AUTO_INCREMENT,
-  `disease_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `one_line_description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `causes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `symptoms` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `prevention` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `disease_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `one_line_description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `causes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `symptoms` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `prevention` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`diseases_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `diseases`
@@ -670,20 +627,20 @@ INSERT INTO `diseases` (`diseases_id`, `disease_name`, `description`, `one_line_
 DROP TABLE IF EXISTS `disease_reports`;
 CREATE TABLE IF NOT EXISTS `disease_reports` (
   `report_id` int NOT NULL AUTO_INCREMENT,
-  `report_type` enum('farmer','crop') COLLATE utf8mb4_0900_ai_ci DEFAULT 'farmer',
+  `report_type` enum('farmer','crop') COLLATE utf8mb4_general_ci DEFAULT 'farmer',
   `user_id` int NOT NULL,
   `disease_id` int NOT NULL,
-  `crop_type` varchar(100) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `severity` enum('mild','moderate','severe') COLLATE utf8mb4_0900_ai_ci DEFAULT 'moderate',
-  `description` text COLLATE utf8mb4_0900_ai_ci,
-  `image_url` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `crop_type` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `severity` enum('mild','moderate','severe') COLLATE utf8mb4_general_ci DEFAULT 'moderate',
+  `description` text COLLATE utf8mb4_general_ci,
+  `image_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `report_data` json DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`report_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -695,19 +652,19 @@ DROP TABLE IF EXISTS `farmers`;
 CREATE TABLE IF NOT EXISTS `farmers` (
   `farmer_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `farm_name` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `phone_number` varchar(10) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `farm_size` varchar(50) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `crops_grown` text COLLATE utf8mb4_0900_ai_ci,
-  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `farm_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone_number` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `farm_size` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `crops_grown` text COLLATE utf8mb4_general_ci,
+  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`farmer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `farmers`
@@ -728,16 +685,16 @@ CREATE TABLE IF NOT EXISTS `farmer_consultancy_subscriptions` (
   `farmer_id` int NOT NULL,
   `service_id` int NOT NULL,
   `consultant_id` int NOT NULL,
-  `subscription_status` enum('active','expired','cancelled') COLLATE utf8mb4_0900_ai_ci DEFAULT 'active',
+  `subscription_status` enum('active','expired','cancelled') COLLATE utf8mb4_general_ci DEFAULT 'active',
   `start_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `end_date` datetime DEFAULT NULL,
   `amount_paid` decimal(10,2) DEFAULT NULL,
   `remaining_consultations` int DEFAULT NULL,
-  `payment_status` enum('pending','completed','failed') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `transaction_id` varchar(100) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `payment_status` enum('pending','completed','failed') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `transaction_id` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `rating` int DEFAULT NULL,
-  `review` text COLLATE utf8mb4_0900_ai_ci,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `review` text COLLATE utf8mb4_general_ci,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
@@ -746,7 +703,7 @@ CREATE TABLE IF NOT EXISTS `farmer_consultancy_subscriptions` (
   KEY `farmer_id` (`farmer_id`),
   KEY `service_id` (`service_id`),
   KEY `consultant_id` (`consultant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `farmer_consultancy_subscriptions`
@@ -771,7 +728,7 @@ CREATE TABLE IF NOT EXISTS `farmer_products` (
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`farmer_product_id`),
   UNIQUE KEY `unique_farmer_product` (`farmer_id`,`pro_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `farmer_products`
@@ -792,15 +749,15 @@ CREATE TABLE IF NOT EXISTS `farmer_product_approval` (
   `approval_id` int NOT NULL AUTO_INCREMENT,
   `pro_id` int NOT NULL,
   `farmer_id` int NOT NULL,
-  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `rejection_reason` text COLLATE utf8mb4_0900_ai_ci,
+  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `rejection_reason` text COLLATE utf8mb4_general_ci,
   `approval_date` datetime DEFAULT NULL,
   `approved_by` int DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`approval_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `farmer_product_approval`
@@ -820,11 +777,11 @@ DROP TABLE IF EXISTS `feedback_reports`;
 CREATE TABLE IF NOT EXISTS `feedback_reports` (
   `feedback_report_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `feedback_type` enum('farmer','vendor','consultant') COLLATE utf8mb4_0900_ai_ci DEFAULT 'farmer',
+  `feedback_type` enum('farmer','vendor','consultant') COLLATE utf8mb4_general_ci DEFAULT 'farmer',
   `target_user_id` int DEFAULT NULL,
   `rating` int DEFAULT NULL,
-  `comment` text COLLATE utf8mb4_0900_ai_ci,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `comment` text COLLATE utf8mb4_general_ci,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`feedback_report_id`)
@@ -847,15 +804,15 @@ DROP TABLE IF EXISTS `prediction_details`;
 CREATE TABLE IF NOT EXISTS `prediction_details` (
   `pre_det_id` int NOT NULL AUTO_INCREMENT,
   `pre_ms_id` int DEFAULT NULL,
-  `predicted_disease` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `confidence_percent` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `predicted_disease` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `confidence_percent` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`pre_det_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=351 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=393 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prediction_details`
@@ -1211,7 +1168,49 @@ INSERT INTO `prediction_details` (`pre_det_id`, `pre_ms_id`, `predicted_disease`
 (347, 50, 'Healthy', '0.00%', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL),
 (348, 50, 'Bacterial Rot', '0.00%', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL),
 (349, 50, 'Powdery Mildew', '0.00%', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL),
-(350, 50, 'Downey Mildew', '0.00%', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL);
+(350, 50, 'Downey Mildew', '0.00%', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL),
+(351, 51, 'Black Rot', '99.38%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(352, 51, 'ESCA', '0.62%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(353, 51, 'Leaf Blight', '0.00%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(354, 51, 'Healthy', '0.00%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(355, 51, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(356, 51, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(357, 51, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(358, 52, 'Black Rot', '99.13%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(359, 52, 'ESCA', '0.87%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(360, 52, 'Leaf Blight', '0.00%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(361, 52, 'Healthy', '0.00%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(362, 52, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(363, 52, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(364, 52, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(365, 53, 'Black Rot', '98.85%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(366, 53, 'Leaf Blight', '0.65%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(367, 53, 'ESCA', '0.37%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(368, 53, 'Healthy', '0.14%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(369, 53, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(370, 53, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(371, 53, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(372, 54, 'Black Rot', '99.13%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(373, 54, 'ESCA', '0.87%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(374, 54, 'Leaf Blight', '0.00%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(375, 54, 'Healthy', '0.00%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(376, 54, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(377, 54, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(378, 54, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(379, 55, 'Black Rot', '99.48%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(380, 55, 'ESCA', '0.32%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(381, 55, 'Leaf Blight', '0.11%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(382, 55, 'Healthy', '0.09%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(383, 55, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(384, 55, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(385, 55, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(386, 56, 'Black Rot', '99.38%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(387, 56, 'ESCA', '0.62%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(388, 56, 'Leaf Blight', '0.00%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(389, 56, 'Healthy', '0.00%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(390, 56, 'Bacterial Rot', '0.00%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(391, 56, 'Powdery Mildew', '0.00%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL),
+(392, 56, 'Downey Mildew', '0.00%', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1222,14 +1221,14 @@ INSERT INTO `prediction_details` (`pre_det_id`, `pre_ms_id`, `predicted_disease`
 DROP TABLE IF EXISTS `prediction_master`;
 CREATE TABLE IF NOT EXISTS `prediction_master` (
   `pre_ms_id` int NOT NULL AUTO_INCREMENT,
-  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`pre_ms_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prediction_master`
@@ -1285,7 +1284,13 @@ INSERT INTO `prediction_master` (`pre_ms_id`, `image`, `is_active`, `created_on`
 (47, '../Prediction_images/user9/image_predict_04_11_25_11_45_19.jpg', 'Y', '2025-11-04 11:45:19', 9, NULL, NULL),
 (48, '../Prediction_images/user9/image_predict_04_11_25_12_06_47.jpg', 'Y', '2025-11-04 12:06:47', 9, NULL, NULL),
 (49, '../Prediction_images/user9/image_predict_12_11_25_09_36_56.jpg', 'Y', '2025-11-12 09:36:56', 9, NULL, NULL),
-(50, '../Prediction_images/user9/image_predict_07_12_25_21_39_54.jpg', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL);
+(50, '../Prediction_images/user9/image_predict_07_12_25_21_39_54.jpg', 'Y', '2025-12-07 21:39:54', 9, NULL, NULL),
+(51, '../Prediction_images/user9/image_predict_04_05_26_09_46_53.jpg', 'Y', '2026-05-04 09:46:53', 9, NULL, NULL),
+(52, '../Prediction_images/user9/image_predict_04_05_26_09_51_40.jpg', 'Y', '2026-05-04 09:51:40', 9, NULL, NULL),
+(53, '../Prediction_images/user9/image_predict_04_05_26_12_15_07.jpg', 'Y', '2026-05-04 12:15:07', 9, NULL, NULL),
+(54, '../Prediction_images/user9/image_predict_04_05_26_12_31_57.jpg', 'Y', '2026-05-04 12:31:57', 9, NULL, NULL),
+(55, '../Prediction_images/user9/image_predict_04_05_26_12_44_44.jpg', 'Y', '2026-05-04 12:44:44', 9, NULL, NULL),
+(56, '../Prediction_images/user9/image_predict_04_05_26_12_51_06.jpg', 'Y', '2026-05-04 12:51:06', 9, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1296,23 +1301,23 @@ INSERT INTO `prediction_master` (`pre_ms_id`, `image`, `is_active`, `created_on`
 DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
   `pro_id` int NOT NULL AUTO_INCREMENT,
-  `pro_name` text COLLATE utf8mb4_0900_ai_ci,
-  `pro_image` text COLLATE utf8mb4_0900_ai_ci,
-  `pro_description` text COLLATE utf8mb4_0900_ai_ci,
-  `pro_uses` text COLLATE utf8mb4_0900_ai_ci,
-  `pro_contents` text COLLATE utf8mb4_0900_ai_ci,
-  `type` varchar(200) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_block` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `pro_name` text COLLATE utf8mb4_general_ci,
+  `pro_image` text COLLATE utf8mb4_general_ci,
+  `pro_description` text COLLATE utf8mb4_general_ci,
+  `pro_uses` text COLLATE utf8mb4_general_ci,
+  `pro_contents` text COLLATE utf8mb4_general_ci,
+  `type` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_block` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'N',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   `vendor_id` int DEFAULT NULL,
   `farmer_id` int DEFAULT NULL,
-  `product_source` enum('farmer','vendor') COLLATE utf8mb4_0900_ai_ci DEFAULT 'vendor',
+  `product_source` enum('farmer','vendor') COLLATE utf8mb4_general_ci DEFAULT 'vendor',
   PRIMARY KEY (`pro_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
@@ -1334,15 +1339,15 @@ CREATE TABLE IF NOT EXISTS `product_approval` (
   `approval_id` int NOT NULL AUTO_INCREMENT,
   `pro_id` int NOT NULL,
   `vendor_id` int NOT NULL,
-  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `rejection_reason` text COLLATE utf8mb4_0900_ai_ci,
+  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `rejection_reason` text COLLATE utf8mb4_general_ci,
   `approval_date` datetime DEFAULT NULL,
   `approved_by` int DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`approval_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `product_approval`
@@ -1363,10 +1368,10 @@ CREATE TABLE IF NOT EXISTS `product_reviews` (
   `pro_id` int NOT NULL,
   `user_id` int NOT NULL,
   `rating` int DEFAULT NULL,
-  `review_text` text COLLATE utf8mb4_0900_ai_ci,
+  `review_text` text COLLATE utf8mb4_general_ci,
   `seller_id` int DEFAULT NULL,
-  `product_source` enum('farmer','vendor') COLLATE utf8mb4_0900_ai_ci DEFAULT 'vendor',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `product_source` enum('farmer','vendor') COLLATE utf8mb4_general_ci DEFAULT 'vendor',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
@@ -1392,11 +1397,11 @@ CREATE TABLE IF NOT EXISTS `pro_feedback` (
   `feedback_id ineger` int NOT NULL AUTO_INCREMENT,
   `pro_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
-  `description` text COLLATE utf8mb4_0900_ai_ci,
+  `description` text COLLATE utf8mb4_general_ci,
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`feedback_id ineger`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1408,19 +1413,19 @@ DROP TABLE IF EXISTS `pro_inventory`;
 CREATE TABLE IF NOT EXISTS `pro_inventory` (
   `pro_inventory_id` int NOT NULL AUTO_INCREMENT,
   `pro_id` int DEFAULT NULL,
-  `pro_price` varchar(50) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `pro_price` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `pro_mfg_date` date DEFAULT NULL,
   `pro_exp_date` date DEFAULT NULL,
-  `pro_discunt` varchar(3) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `pro_weigth` varchar(300) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `pro_qty` varchar(300) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `pro_discunt` varchar(3) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pro_weigth` varchar(300) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pro_qty` varchar(300) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   PRIMARY KEY (`pro_inventory_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pro_inventory`
@@ -1446,7 +1451,7 @@ CREATE TABLE IF NOT EXISTS `pro_rating` (
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   PRIMARY KEY (`pro_rating_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1461,14 +1466,14 @@ CREATE TABLE IF NOT EXISTS `purchase_product` (
   `pro_id` int DEFAULT NULL,
   `pro_qty` int DEFAULT NULL,
   `total_amt` int DEFAULT NULL,
-  `payment_method` text COLLATE utf8mb4_0900_ai_ci,
-  `transaction_id` text COLLATE utf8mb4_0900_ai_ci,
+  `payment_method` text COLLATE utf8mb4_general_ci,
+  `transaction_id` text COLLATE utf8mb4_general_ci,
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
-  `product_source` enum('farmer','vendor') COLLATE utf8mb4_0900_ai_ci DEFAULT 'vendor',
+  `product_source` enum('farmer','vendor') COLLATE utf8mb4_general_ci DEFAULT 'vendor',
   `seller_id` int DEFAULT NULL,
   PRIMARY KEY (`purchas_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `purchase_product`
@@ -1477,7 +1482,8 @@ CREATE TABLE IF NOT EXISTS `purchase_product` (
 INSERT INTO `purchase_product` (`purchas_id`, `user_id`, `pro_id`, `pro_qty`, `total_amt`, `payment_method`, `transaction_id`, `created_by`, `created_on`, `product_source`, `seller_id`) VALUES
 (1, 9, 1, 3, 300, 'UPI', 'TXN202605010943409', 9, '2026-05-01 09:43:40', 'vendor', NULL),
 (2, 12, 2, 3, 600, 'UPI', 'T485157485157895156578515', 12, '2026-05-02 22:50:12', 'farmer', NULL),
-(3, 12, 1, 1, 100, 'UPI', 'T485157485157895156578515', 12, '2026-05-02 22:50:12', 'vendor', NULL);
+(3, 12, 1, 1, 100, 'UPI', 'T485157485157895156578515', 12, '2026-05-02 22:50:12', 'vendor', NULL),
+(4, 9, 3, 3, 300, 'UPI', 'TXN202605041233059', 9, '2026-05-04 12:33:05', 'vendor', NULL);
 
 -- --------------------------------------------------------
 
@@ -1488,19 +1494,19 @@ INSERT INTO `purchase_product` (`purchas_id`, `user_id`, `pro_id`, `pro_qty`, `t
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `role` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `mb_number` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `user_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `role` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mb_number` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
@@ -1525,20 +1531,21 @@ CREATE TABLE IF NOT EXISTS `user_cart` (
   `pro_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   `pro_qty` int DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`cart_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user_cart`
 --
 
 INSERT INTO `user_cart` (`cart_id`, `pro_id`, `user_id`, `pro_qty`, `is_active`, `created_on`, `created_by`, `modified_on`, `modified_by`) VALUES
-(1, 1, 9, 3, 'N', '2026-05-01 09:43:31', 9, '2026-05-01 09:43:40', 9);
+(1, 1, 9, 3, 'N', '2026-05-01 09:43:31', 9, '2026-05-01 09:43:40', 9),
+(4, 3, 9, 3, 'N', '2026-05-04 08:40:17', 9, '2026-05-04 12:33:05', 9);
 
 -- --------------------------------------------------------
 
@@ -1550,20 +1557,20 @@ DROP TABLE IF EXISTS `vendors`;
 CREATE TABLE IF NOT EXISTS `vendors` (
   `vendor_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `company_name` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `license_no` varchar(100) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `phone_number` varchar(10) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `license_verified` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
-  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `company_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `license_no` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone_number` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `license_verified` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'N',
+  `verification_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
   PRIMARY KEY (`vendor_id`),
   UNIQUE KEY `license_no` (`license_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `vendors`
@@ -1583,11 +1590,11 @@ CREATE TABLE IF NOT EXISTS `vendor_feedback` (
   `ven_feed_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
   `vendor_id` int DEFAULT NULL,
-  `description` text COLLATE utf8mb4_0900_ai_ci,
+  `description` text COLLATE utf8mb4_general_ci,
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   PRIMARY KEY (`ven_feed_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1600,10 +1607,10 @@ CREATE TABLE IF NOT EXISTS `vendor_products` (
   `vendor_product_id` int NOT NULL AUTO_INCREMENT,
   `vendor_id` int NOT NULL,
   `pro_id` int NOT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`vendor_product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `vendor_products`
@@ -1627,7 +1634,7 @@ CREATE TABLE IF NOT EXISTS `vendor_rating` (
   `created_by` int DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   PRIMARY KEY (`vendor_rating_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1638,21 +1645,21 @@ CREATE TABLE IF NOT EXISTS `vendor_rating` (
 DROP TABLE IF EXISTS `video_tutorial`;
 CREATE TABLE IF NOT EXISTS `video_tutorial` (
   `video_tutorial_id` int NOT NULL AUTO_INCREMENT,
-  `video` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `video` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `uploaded_by` int DEFAULT NULL,
-  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
+  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
   `approved_by` int DEFAULT NULL,
-  `thumbnail` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `thumbnail` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `is_active` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `modified_on` datetime DEFAULT NULL,
   `modified_by` int DEFAULT NULL,
-  `video_url` varchar(500) COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `video_url` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`video_tutorial_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `video_tutorial`
@@ -1665,7 +1672,7 @@ INSERT INTO `video_tutorial` (`video_tutorial_id`, `video`, `title`, `descriptio
 (3, '../Video_tutorials/3.mp4', 'Aerial Potato Disease Detection with Hyperspectral Systems', 'In this video, plant pathologist Katie Gold discusses the importance of early disease detection in agriculture to prevent significant crop losses . She explains her team\'s technology, which combines plant pathology, remote sensing, and data science to measure how light interacts with plants . This method can detect subtle changes in light reflection that indicate plant stress or disease long before they are visible to the human eye .\r\n\r\nThe video notes that this aerial detection technology can accurately map specific disease incidents in potato fields, even when the disease incidence is very low . The preliminary findings suggest that aerial detection is possible in real-world applications and that early data acquisition provides better insights into crop health than just a visual inspection .', NULL, 'pending', NULL, '../Thumbnail/3.png', 'Y', NULL, NULL, NULL, NULL, NULL),
 (4, '../Video_tutorials/4.mp4', 'Monitoring Crop Health With Drones | Maryland Farm & Harvest', 'REmote sensing Crop disease detection \r\nThis video explains how a Maryland-based company, Mad Tech, uses drones to help farmers like Sam Parker manage their fields more effectively. The drones are equipped with multispectral cameras that create a detailed health map of the entire field, which uses colors to indicate the health of the crops . This technology helps farmers pinpoint specific problem areas, saving them time and money by allowing them to scout only the stressed areas instead of the entire field. The video concludes that this approach combines modern technology with traditional farming practices to help farmers ensure the long-term success of their operations', NULL, 'pending', NULL, '../Thumbnail/6.png', 'Y', NULL, NULL, NULL, NULL, NULL),
 (5, '../Video_tutorials/5.mp4', 'Researchers Develop Disease-Resistant Grapes', 'This video discusses a new solution to Pierce\'s disease, which has been a chronic problem for California winemakers for 20 years. UC Davis researchers have created a disease-resistant grape by crossbreeding traditional wine grapes with a naturally resistant grape from Mexico', NULL, 'pending', NULL, '../Thumbnail/5.png', 'Y', NULL, NULL, NULL, NULL, NULL),
-(8, 'Video_tutorials/video_11_1777612762.mp4', 'testing', 'test', 11, 'pending', NULL, '0', 'Y', '2026-05-01 10:49:22', 11, NULL, NULL, NULL),
+(8, 'Video_tutorials/video_11_1777612762.mp4', 'testing', 'test', 11, 'approved', NULL, '0', 'Y', '2026-05-01 10:49:22', 11, '2026-05-04 08:33:41', 1, NULL),
 (9, 'Video_tutorials/video_11_1777613021.mp4', 'testing', 'test', 11, 'approved', NULL, 'Thumbnail/thumb_11_1777613021.jpg', 'Y', '2026-05-01 10:53:41', 11, '2026-05-01 11:49:36', 1, NULL);
 
 -- --------------------------------------------------------
@@ -1678,14 +1685,14 @@ DROP TABLE IF EXISTS `video_tutorials_approval`;
 CREATE TABLE IF NOT EXISTS `video_tutorials_approval` (
   `video_approval_id` int NOT NULL AUTO_INCREMENT,
   `video_tutorial_id` int NOT NULL,
-  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending',
-  `rejection_reason` text COLLATE utf8mb4_0900_ai_ci,
+  `approval_status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
+  `rejection_reason` text COLLATE utf8mb4_general_ci,
   `approval_date` datetime DEFAULT NULL,
   `approved_by` int DEFAULT NULL,
-  `is_active` varchar(1) COLLATE utf8mb4_0900_ai_ci DEFAULT 'Y',
+  `is_active` varchar(1) COLLATE utf8mb4_general_ci DEFAULT 'Y',
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`video_approval_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Constraints for dumped tables

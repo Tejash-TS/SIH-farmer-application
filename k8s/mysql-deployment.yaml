@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mysql
+  namespace: sih
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mysql
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+
+        - name: MYSQL_DATABASE
+          value: sih
+
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+
+        ports:
+        - containerPort: 3306
+
+        volumeMounts:
+
+        # Persistent database storage
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+
+    
+
+      volumes:
+
+      # PVC
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+
+    

@@ -1,0 +1,33 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30080
+    hostPort: 80
+    protocol: TCP
+
+  - containerPort: 30090
+    hostPort: 9090
+    protocol: TCP
+
+  - containerPort: 30000
+    hostPort: 8000
+    protocol: TCP
+
+- role: worker
+- role: worker
+- role: worker
+
+
+# One control plane node and three "workers".
+#
+# While these will not add more real compute capacity and
+# have limited isolation, this can be useful for testing
+# rolling updates etc.
+#
+# The API-server and other control plane components will be
+# on the control-plane node.
+#
+# You probably don't need this unless you are testing Kubernetes itself

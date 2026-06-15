@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: phpapp
+  namespace: sih
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: phpapp
+
+  template:
+    metadata:
+      labels:
+        app: phpapp
+
+    spec:
+      containers:
+      - name: phpapp
+        image: tejash727/sih-phpapp:latest
+
+        ports:
+        - containerPort: 80

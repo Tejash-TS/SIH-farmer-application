@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: aiprediction
+  namespace: sih
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: aiprediction
+
+  template:
+    metadata:
+      labels:
+        app: aiprediction
+
+    spec:
+      containers:
+      - name: aiprediction
+        image: tejash727/sih-aiprediction:latest
+
+        ports:
+        - containerPort: 8001
