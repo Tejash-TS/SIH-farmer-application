@@ -1,0 +1,5 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+terra_key_ec2
+terra_key_ec2.pub
