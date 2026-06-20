@@ -513,14 +513,14 @@ kind version
 > Git clone downloads your project code from GitHub onto the EC2 server.
 
 ```bash
-git clone https://github.com/Tejash-TS/SIH.git
+git clone https://github.com/Tejash-TS/SIH-farmer-application.git
 
 cd SIH
 ```
 
 **Project structure you'll see:**
 ```
-SIH/
+SIH-farmer-application/
 │
 ├── docker-compose.yml
 ├── Dockerfile
