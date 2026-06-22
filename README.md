@@ -1337,14 +1337,9 @@ CHAT_SERVER_PORT=8000
 **Tejash S.**
 - 💼 Final Year B.E. Computer Engineering (2026 Batch)
 - 🔗 [GitHub](https://github.com/Tejash-TS)
-- 🔗 [LinkedIn](https://www.linkedin.com/in/tejash-s)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/tejash-sananse/)
 
 ---
 
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 > ⭐ If you found this project helpful or interesting, please consider giving it a star on GitHub!
