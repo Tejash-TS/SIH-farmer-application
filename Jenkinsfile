@@ -1,6 +1,8 @@
-agent {
-    label 'docker'
+pipeline {
 
+    agent {
+        label 'docker'
+    }
 
     environment {
         DOCKER_HUB = "tejash727"
@@ -61,12 +63,13 @@ agent {
 
         stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: "${DOCKER_CREDS}",
-                    usernameVariable: 'USERNAME',
-                    passwordVariable: 'PASSWORD'
-                )]) {
-
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${DOCKER_CREDS}",
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
                     sh '''
                     echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
                     '''
@@ -76,27 +79,21 @@ agent {
 
         stage('Push Images') {
             steps {
-
                 sh "docker push ${PHP_IMAGE}:${IMAGE_TAG}"
-
                 sh "docker push ${CHAT_IMAGE}:${IMAGE_TAG}"
-
                 sh "docker push ${AI_IMAGE}:${IMAGE_TAG}"
-
             }
         }
 
         stage('Deploy to Kubernetes') {
-
             steps {
-
                 withCredentials([
-                    file(credentialsId: "${KUBECONFIG_CREDENTIAL}",
-                    variable: 'KUBECONFIG')
+                    file(
+                        credentialsId: "${KUBECONFIG_CREDENTIAL}",
+                        variable: 'KUBECONFIG'
+                    )
                 ]) {
-
                     sh """
-
                     kubectl set image deployment/phpapp \
                     phpapp=${PHP_IMAGE}:${IMAGE_TAG} \
                     -n ${NAMESPACE}
@@ -108,100 +105,77 @@ agent {
                     kubectl set image deployment/aiprediction \
                     aiprediction=${AI_IMAGE}:${IMAGE_TAG} \
                     -n ${NAMESPACE}
-
                     """
-
                 }
-
             }
-
         }
 
         stage('Verify Rollout') {
-
             steps {
-
                 withCredentials([
-                    file(credentialsId: "${KUBECONFIG_CREDENTIAL}",
-                    variable: 'KUBECONFIG')
+                    file(
+                        credentialsId: "${KUBECONFIG_CREDENTIAL}",
+                        variable: 'KUBECONFIG'
+                    )
                 ]) {
-
                     sh """
-
                     kubectl rollout status deployment/phpapp -n ${NAMESPACE}
 
                     kubectl rollout status deployment/chatserver -n ${NAMESPACE}
 
                     kubectl rollout status deployment/aiprediction -n ${NAMESPACE}
-
                     """
-
                 }
-
             }
-
         }
 
         stage('Cleanup') {
-
             steps {
-
                 sh '''
                 docker image prune -f
                 '''
-
             }
-
         }
-
     }
 
     post {
 
         success {
-
             mail(
                 to: "${EMAIL}",
                 subject: "SUCCESS : Build #${BUILD_NUMBER}",
                 body: """
-
 Build Successful
 
 Project : SIH Farmer Application
 
 Build Number : ${BUILD_NUMBER}
 
-Images pushed successfully.
+Docker images built and pushed successfully.
 
-Kubernetes deployment completed.
-
+Kubernetes deployment completed successfully.
 """
-
             )
-
         }
 
         failure {
-
             mail(
                 to: "${EMAIL}",
                 subject: "FAILED : Build #${BUILD_NUMBER}",
                 body: """
-
 Build Failed
 
 Project : SIH Farmer Application
 
 Build Number : ${BUILD_NUMBER}
 
-Please check Jenkins console logs.
-
+Please check the Jenkins console logs for details.
 """
-
             )
-
         }
 
+        always {
+            cleanWs()
+        }
     }
-
 }
