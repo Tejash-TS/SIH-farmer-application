@@ -1,5 +1,6 @@
-pipeline {
-    agent any
+agent {
+    label 'docker'
+
 
     environment {
         DOCKER_HUB = "tejash727"
