@@ -34,16 +34,18 @@ pipeline {
         }
 
         
-    stage('SonarQube Analysis') {
+stage('SonarQube Analysis') {
     steps {
-        withSonarQubeEnv("${SONARQUBE_SERVER}") {
-            sh """
-            ${tool "${SONAR_SCANNER}"}/bin/sonar-scanner \
-            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-            -Dsonar.projectName=SIH-Farmer-Application \
-            -Dsonar.sources=. \
-            -Dsonar.sourceEncoding=UTF-8
-            """
+        script {
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv('SonarQube') {
+                sh """
+                ${scannerHome}/bin/sonar-scanner \
+                  -Dsonar.projectKey=SIH-Farmer-Application \
+                  -Dsonar.projectName=SIH-Farmer-Application \
+                  -Dsonar.sources=.
+                """
+            }
         }
     }
 }
