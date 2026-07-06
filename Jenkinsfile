@@ -19,6 +19,10 @@ pipeline {
         NAMESPACE = "sih"
 
         EMAIL = "tejashsananse0@gmail.com"
+
+        SONARQUBE_SERVER = "SonarQube"
+        SONAR_PROJECT_KEY = "SIH-Farmer-Application"
+        SONAR_SCANNER = "SonarScanner"
     }
 
     stages {
@@ -28,6 +32,28 @@ pipeline {
                 checkout scm
             }
         }
+
+        
+    stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv("${SONARQUBE_SERVER}") {
+            sh """
+            ${tool "${SONAR_SCANNER}"}/bin/sonar-scanner \
+            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+            -Dsonar.projectName=SIH-Farmer-Application \
+            -Dsonar.sources=. \
+            -Dsonar.sourceEncoding=UTF-8
+            """
+        }
+    }
+}
+stage('Quality Gate') {
+    steps {
+        timeout(time: 5, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+        }
+    }
+}
 
         stage('Build PHP Image') {
             steps {
