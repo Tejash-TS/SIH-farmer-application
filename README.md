@@ -44,6 +44,25 @@
   - [Step 7 — Verify Automated Deployment](#step-7--verify-automated-deployment)
   - [Step 8 — Access the Application](#step-8--access-the-application)
   - [Destroy Infrastructure](#destroy-infrastructure)
+- [🤖 CI/CD Pipeline (Jenkins Automation)](#-cicd-pipeline-jenkins-automation)
+  - [CI/CD Architecture](#cicd-architecture)
+  - [Step 1 — Provision the Jenkins Server](#step-1--provision-the-jenkins-server)
+  - [Step 2 — Install Java, Git, Docker](#step-2--install-java-git-docker)
+  - [Step 3 — Install Jenkins](#step-3--install-jenkins)
+  - [Step 4 — First-Time Jenkins Setup](#step-4--first-time-jenkins-setup)
+  - [Step 5 — Install kubectl on the Jenkins Server](#step-5--install-kubectl-on-the-jenkins-server)
+  - [Step 6 — Install Required Jenkins Plugins](#step-6--install-required-jenkins-plugins)
+  - [Step 7 — Let Jenkins Run Docker](#step-7--let-jenkins-run-docker)
+  - [Step 8 — Add Docker Hub Credentials](#step-8--add-docker-hub-credentials)
+  - [Step 9 — Add Kubernetes Access (kubeconfig)](#step-9--add-kubernetes-access-kubeconfig)
+  - [Step 10 — Configure Gmail SMTP for Build Alerts](#step-10--configure-gmail-smtp-for-build-alerts)
+  - [Step 11 — Install & Connect SonarQube](#step-11--install--connect-sonarqube)
+  - [Step 12 — Create the Pipeline Job](#step-12--create-the-pipeline-job)
+  - [Step 13 — Connect GitHub Webhook](#step-13--connect-github-webhook)
+  - [The Jenkinsfile](#the-jenkinsfile)
+  - [Step 14 — Run Your First Build](#step-14--run-your-first-build)
+  - [Monitoring the Pipeline (Prometheus + Grafana)](#monitoring-the-pipeline-prometheus--grafana)
+  - [Real Issues You May Hit (and Fixes)](#real-issues-you-may-hit-and-fixes)
 - [Local Setup (Docker Compose)](#local-setup-docker-compose)
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
@@ -1252,7 +1271,640 @@ Destroy complete! Resources: 4 destroyed.
 
 ---
 
-## 💻 Local Setup (Docker Compose)
+## 🤖 CI/CD Pipeline (Jenkins Automation)
+
+> 🟢 **Beginner Friendly** — Everything above (manual and Terraform) gets your app *onto* a server. This section automates what happens **after that** — every `git push` automatically rebuilds, tests, and redeploys the app with zero manual commands. This is the same production-style pipeline used for this exact repository.
+
+**What this adds on top of the manual/Terraform deployment:**
+
+| Without CI/CD | With CI/CD (this section) |
+|---|---|
+| You SSH in and run `docker build` + `docker push` + `kubectl rollout restart` by hand every time you change code | Jenkins does all of it automatically the moment you `git push` |
+| No code-quality check before deploying | SonarQube scans every commit and blocks bad code before it's ever built |
+| No visibility into whether a deploy succeeded | Jenkins emails you a success/failure report after every build |
+
+---
+
+### CI/CD Architecture
+
+```
+Developer
+    │  git push
+    ▼
+GitHub Repository
+    │  Webhook (instant trigger)
+    ▼
+Jenkins Server (EC2)
+    │
+    ├── Checkout Code
+    ├── SonarQube Analysis + Quality Gate
+    ├── Build Docker Images (PHP, Chat, AI)
+    ├── Push Images to Docker Hub
+    ├── Deploy to Kubernetes (kubectl set image)
+    ├── Verify Rollout
+    └── Send Email Notification
+```
+
+> 💡 Jenkins can run **on the same EC2 instance** as your Kind cluster, or on a **separate dedicated EC2**. This guide assumes a separate Jenkins EC2 that talks to your existing Kind cluster over its kubeconfig — this is closer to how real teams separate CI infrastructure from the cluster it deploys to.
+
+---
+
+### Step 1 — Provision the Jenkins Server
+
+> A second EC2 instance dedicated to Jenkins keeps your CI/CD tooling separate from the cluster it deploys to — if Jenkins misbehaves, your live app isn't affected.
+
+| Setting | Value |
+|---|---|
+| OS | Ubuntu 24.04 LTS |
+| Instance Type | `t3.large` (minimum — 2 vCPU, 8 GB RAM) |
+| Storage | 30 GB to start (TensorFlow-based image builds are storage-hungry — expect to expand to 50 GB) |
+
+**Security Group — open these ports:**
+
+| Port | Purpose |
+|---|---|
+| 22 | SSH |
+| 8080 | Jenkins web UI + GitHub webhook target |
+| 9000 | SonarQube web UI |
+
+**Connect:**
+```bash
+ssh -i Jenkins.pem ubuntu@<JENKINS_EC2_PUBLIC_IP>
+```
+
+---
+
+### Step 2 — Install Java, Git, Docker
+
+**Java** (Jenkins itself is a Java application and won't run without it):
+```bash
+sudo apt update
+sudo apt upgrade -y
+
+sudo apt install openjdk-21-jdk -y
+java --version
+# Expected: openjdk 21
+```
+
+**Git** (needed for Jenkins to clone your repo on every build):
+```bash
+sudo apt install git -y
+git --version
+```
+
+**Docker** (needed to build the PHP/Chat/AI images inside the pipeline):
+```bash
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+docker --version
+
+sudo usermod -aG docker ubuntu
+newgrp docker
+
+docker run hello-world   # sanity check — should pull and run successfully
+```
+
+---
+
+### Step 3 — Install Jenkins
+
+```bash
+# Import Jenkins' signing key so apt can trust the package
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+# Add Jenkins' official package repository
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+https://pkg.jenkins.io/debian-stable binary/ | \
+sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt update
+sudo apt install jenkins -y
+
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+# Expected: active (running)
+```
+
+---
+
+### Step 4 — First-Time Jenkins Setup
+
+1. Open `http://<JENKINS_EC2_PUBLIC_IP>:8080` in your browser.
+2. Get the one-time unlock password (Jenkins requires server access to prove you own the box):
+   ```bash
+   sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+   ```
+3. Paste it into the browser.
+4. Click **Install Suggested Plugins** — this installs Jenkins' common baseline plugins (Git, Pipeline, Credentials, etc.) automatically.
+5. Create your **Administrator** account (username, password, email) — this is your permanent login going forward.
+
+---
+
+### Step 5 — Install kubectl on the Jenkins Server
+
+> This is what lets Jenkins actually talk to your Kind cluster to deploy new images.
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+kubectl version --client
+```
+
+---
+
+### Step 6 — Install Required Jenkins Plugins
+
+Go to **Manage Jenkins → Plugins → Available Plugins** and install:
+
+| Plugin | Why you need it |
+|---|---|
+| Docker Pipeline | Lets pipeline stages run `docker build` / `docker push` |
+| Git | Enables `checkout scm` to pull your repo |
+| GitHub Integration | Lets a GitHub webhook trigger a Jenkins build |
+| Pipeline | Enables Jenkinsfile-based pipelines |
+| Credentials + Credentials Binding | Securely stores and injects secrets (Docker Hub, kubeconfig, SonarQube token) |
+| Email Extension | Powers the success/failure email at the end of every build |
+| Kubernetes CLI | `kubectl` integration inside pipeline steps |
+| Workspace Cleanup | Enables `cleanWs()` so old build files don't pile up |
+| SonarQube Scanner | Runs static code analysis as a pipeline stage |
+
+Restart Jenkins if prompted.
+
+---
+
+### Step 7 — Let Jenkins Run Docker
+
+> By default, Jenkins runs as its own system user (`jenkins`), which doesn't have permission to use Docker — this step grants it.
+
+```bash
+sudo usermod -aG docker jenkins
+sudo systemctl restart jenkins
+groups jenkins
+# Expected output should include: docker
+```
+
+---
+
+### Step 8 — Add Docker Hub Credentials
+
+> This is what lets Jenkins `docker login` and push your images automatically, without typing a password anywhere in the Jenkinsfile.
+
+Go to: **Manage Jenkins → Credentials → System → Global credentials → Add Credentials**
+
+| Field | Value |
+|---|---|
+| Kind | Username with password |
+| Username | your Docker Hub username |
+| Password | your Docker Hub password (or access token — recommended) |
+| ID | `dockerhub` |
+
+---
+
+### Step 9 — Add Kubernetes Access (kubeconfig)
+
+On the machine running your Kind cluster:
+```bash
+cat ~/.kube/config
+```
+Copy the entire output.
+
+In Jenkins: **Manage Jenkins → Credentials → System → Global credentials → Add Credentials**
+
+| Field | Value |
+|---|---|
+| Kind | Secret file |
+| File | upload/paste the kubeconfig |
+| ID | `kubeconfig` |
+
+> ⚠️ **Important gotcha:** every time your Kind cluster is deleted and recreated, it gets a **new random API server port** (e.g. `127.0.0.1:41159` → `127.0.0.1:43553`). Regenerate the kubeconfig with `kind export kubeconfig --name sih-cluster`, then **update this Jenkins credential and check the "Replace" checkbox** — Jenkins silently keeps the old file otherwise, and every deploy will fail against a cluster address that no longer exists.
+
+---
+
+### Step 10 — Configure Gmail SMTP for Build Alerts
+
+> This makes Jenkins email you automatically after every build — success or failure — so you never have to babysit the console output.
+
+**A. Add the Gmail credential:**
+Manage Jenkins → Credentials → Global credentials → Add Credentials
+
+| Field | Value |
+|---|---|
+| Kind | Username with password |
+| Username | your Gmail address |
+| Password | Gmail **App Password** (16-character — never your real password) |
+| ID | `gmail` |
+
+**B. Configure Extended E-mail Notification:**
+Manage Jenkins → System → **Extended E-mail Notification**
+
+| Field | Value |
+|---|---|
+| SMTP Server | `smtp.gmail.com` |
+| SMTP Port | `587` |
+| Credentials | `gmail` |
+| Use SSL | ❌ unchecked |
+| Use TLS | ✅ checked |
+
+**C. Configure the separate "E-mail Notification" section (further down the same page):**
+
+| Field | Value |
+|---|---|
+| Use SMTP Authentication | ✅ **must be checked** |
+| Username | your Gmail address |
+| Password | the same App Password |
+| SMTP Port | `587` |
+| Use TLS | ✅ checked |
+
+> 💡 The #1 gotcha here: Gmail rejects the connection with `530-5.7.0 Authentication Required` if "Use SMTP Authentication" is left unchecked — even when everything else looks correct.
+
+**D. Set the System Admin email** at the top of the same page (it defaults to a placeholder Gmail will reject).
+
+**E. Test it:** scroll to **Test configuration**, enter your email, click the button, and confirm you see *"Email was successfully sent."* Then **Save**.
+
+---
+
+### Step 11 — Install & Connect SonarQube
+
+> SonarQube scans your code for bugs, security issues, and messy code *before* it's ever built into a Docker image — think of it as a quality checkpoint the pipeline can't skip.
+
+**A. Run SonarQube as a container** (on the Jenkins server):
+```bash
+docker volume create sonarqube_data
+docker volume create sonarqube_logs
+docker volume create sonarqube_extensions
+
+docker run -d \
+  --name sonarqube \
+  -p 9000:9000 \
+  -v sonarqube_data:/opt/sonarqube/data \
+  -v sonarqube_logs:/opt/sonarqube/logs \
+  -v sonarqube_extensions:/opt/sonarqube/extensions \
+  sonarqube:lts-community
+```
+> 💡 The named volumes keep your SonarQube history/settings even if the container is recreated.
+
+**B. Open SonarQube** at `http://<JENKINS_EC2_PUBLIC_IP>:9000`, login `admin` / `admin`, and set a new password when prompted.
+
+**C. Generate a token:** avatar (top right) → **My Account → Security** → under Generate Tokens: Name `jenkins-token`, Type **User Token** → **Generate** → copy it immediately (shown only once).
+
+**D. Install Jenkins plugins:** Manage Jenkins → Plugins → install **SonarQube Scanner** and **Quality Gates** (if not already installed in Step 6).
+
+**E. Register the SonarQube server in Jenkins:**
+Manage Jenkins → System → **SonarQube servers**
+
+| Field | Value |
+|---|---|
+| Name | `SonarQube` |
+| Server URL | `http://<JENKINS_EC2_PUBLIC_IP>:9000` |
+| Server authentication token | Add → Secret text → paste token → ID: `sonarqube-token` |
+
+**F. Install the scanner tool:** Manage Jenkins → Tools → **SonarQube Scanner installations** → Add:
+
+| Field | Value |
+|---|---|
+| Name | `SonarScanner` |
+| Install automatically | ✅ checked |
+
+**G. Create the project in SonarQube:** Create Project → Manually → Project Key & Display Name: `SIH-Farmer-Application` → Set Up → Use the global setting → Locally.
+
+**H. Connect the Quality Gate callback (easy to miss!):**
+SonarQube → **Administration → Webhooks** → add:
+```
+http://<JENKINS_EC2_PUBLIC_IP>:8080/sonarqube-webhook/
+```
+> ⚠️ Without this webhook, the pipeline's Quality Gate step will just hang until it times out — SonarQube has no way to tell Jenkins the scan passed or failed.
+
+---
+
+### Step 12 — Create the Pipeline Job
+
+**Dashboard → New Item**
+
+| Field | Value |
+|---|---|
+| Item type | Pipeline |
+| Name | `SIH-CICD` |
+| Pipeline definition | Pipeline script from SCM |
+| SCM | Git |
+| Repository URL | `https://github.com/Tejash-TS/SIH-farmer-application.git` |
+| Branch | `main` |
+| Script Path | `Jenkinsfile` |
+
+Click **Save**. This tells Jenkins to always pull the pipeline steps from the `Jenkinsfile` committed in your repo — so pipeline changes are version-controlled just like your code.
+
+---
+
+### Step 13 — Connect GitHub Webhook
+
+**GitHub repo → Settings → Webhooks → Add webhook**
+
+| Field | Value |
+|---|---|
+| Payload URL | `http://<JENKINS_EC2_PUBLIC_IP>:8080/github-webhook/` |
+| Content type | `application/json` |
+| Which events | Just the push event |
+
+Also enable **"GitHub hook trigger for GITScm polling"** under the pipeline job's own configuration — this is what actually makes Jenkins react to the webhook.
+
+> 💡 **Verify it worked:** GitHub → your webhook → **Recent Deliveries** → a green checkmark with a `200` response means Jenkins received it. A "Failed to connect to host" error almost always means the EC2 security group isn't allowing inbound traffic on port `8080` — check that before assuming the webhook config is wrong.
+
+---
+
+### The Jenkinsfile
+
+Place this in the root of your repository as `Jenkinsfile`:
+
+```groovy
+pipeline {
+    agent {
+        label 'docker'
+    }
+
+    environment {
+        DOCKER_HUB = "tejash727"
+
+        PHP_IMAGE  = "tejash727/sih-phpapp"
+        CHAT_IMAGE = "tejash727/sih-chatserver"
+        AI_IMAGE   = "tejash727/sih-aiprediction"
+
+        IMAGE_TAG = "${BUILD_NUMBER}"
+
+        DOCKER_CREDS           = "dockerhub"
+        KUBECONFIG_CREDENTIAL  = "kubeconfig"
+
+        NAMESPACE = "sih"
+
+        EMAIL = "tejashsananse0@gmail.com"
+
+        SONARQUBE_SERVER   = "SonarQube"
+        SONAR_PROJECT_KEY  = "SIH-Farmer-Application"
+        SONAR_SCANNER      = "SonarScanner"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                          -Dsonar.projectKey=SIH-Farmer-Application \
+                          -Dsonar.projectName=SIH-Farmer-Application \
+                          -Dsonar.sources=.
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Build PHP Image') {
+            steps {
+                sh """
+                docker build \
+                  -t ${PHP_IMAGE}:${IMAGE_TAG} \
+                  -f Dockerfile .
+                """
+            }
+        }
+
+        stage('Build Chat Server Image') {
+            steps {
+                dir('Chat Server') {
+                    sh """
+                    docker build \
+                      -t ${CHAT_IMAGE}:${IMAGE_TAG} .
+                    """
+                }
+            }
+        }
+
+        stage('Build AI Image') {
+            steps {
+                dir('image prdiction server') {
+                    sh """
+                    docker build \
+                      -t ${AI_IMAGE}:${IMAGE_TAG} .
+                    """
+                }
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${DOCKER_CREDS}",
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                    echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                sh "docker push ${PHP_IMAGE}:${IMAGE_TAG}"
+                sh "docker push ${CHAT_IMAGE}:${IMAGE_TAG}"
+                sh "docker push ${AI_IMAGE}:${IMAGE_TAG}"
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([
+                    file(
+                        credentialsId: "${KUBECONFIG_CREDENTIAL}",
+                        variable: 'KUBECONFIG'
+                    )
+                ]) {
+                    sh """
+                    kubectl set image deployment/phpapp \
+                      phpapp=${PHP_IMAGE}:${IMAGE_TAG} \
+                      -n ${NAMESPACE}
+
+                    kubectl set image deployment/chatserver \
+                      chatserver=${CHAT_IMAGE}:${IMAGE_TAG} \
+                      -n ${NAMESPACE}
+
+                    kubectl set image deployment/aiprediction \
+                      aiprediction=${AI_IMAGE}:${IMAGE_TAG} \
+                      -n ${NAMESPACE}
+                    """
+                }
+            }
+        }
+
+        stage('Verify Rollout') {
+            steps {
+                withCredentials([
+                    file(
+                        credentialsId: "${KUBECONFIG_CREDENTIAL}",
+                        variable: 'KUBECONFIG'
+                    )
+                ]) {
+                    sh """
+                    kubectl rollout status deployment/phpapp -n ${NAMESPACE}
+                    kubectl rollout status deployment/chatserver -n ${NAMESPACE}
+                    kubectl rollout status deployment/aiprediction -n ${NAMESPACE}
+                    """
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh '''
+                docker image prune -f
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            mail(
+                to: "${EMAIL}",
+                subject: "SUCCESS : Build #${BUILD_NUMBER}",
+                body: """
+Build Successful
+Project : SIH Farmer Application
+Build Number : ${BUILD_NUMBER}
+Docker images built and pushed successfully.
+Kubernetes deployment completed successfully.
+"""
+            )
+        }
+        failure {
+            mail(
+                to: "${EMAIL}",
+                subject: "FAILED : Build #${BUILD_NUMBER}",
+                body: """
+Build Failed
+Project : SIH Farmer Application
+Build Number : ${BUILD_NUMBER}
+Please check the Jenkins console logs for details.
+"""
+            )
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
+```
+
+**What each stage does:**
+
+| Stage | Purpose |
+|---|---|
+| Checkout | Pulls the exact commit that triggered the webhook |
+| SonarQube Analysis | Static code analysis — bugs, code smells, security hotspots, duplication |
+| Quality Gate | Hard stop — aborts the pipeline if the code doesn't meet quality thresholds |
+| Build PHP/Chat/AI Images | Builds each service independently from its own folder, tagged with `${BUILD_NUMBER}` (never `latest`, so every build is traceable) |
+| Docker Login | Authenticates to Docker Hub using the `dockerhub` credential, only right before the push |
+| Push Images | Publishes all three versioned images |
+| Deploy to Kubernetes | Rolling update via `kubectl set image` — zero downtime |
+| Verify Rollout | Fails the whole build if the new pods don't come up healthy |
+| Cleanup | `docker image prune -f` keeps the Jenkins server's disk from filling up with old layers |
+| `post.success` / `post.failure` | Sends the email notification either way |
+
+---
+
+### Step 14 — Run Your First Build
+
+On the Jenkins job page, click **Build Now**. It should, in order:
+
+1. Clone your repository
+2. Run SonarQube analysis and wait for the Quality Gate
+3. Build all three Docker images
+4. Log in to Docker Hub and push the images
+5. Deploy the new images to your Kind cluster
+6. Verify the rollout succeeded
+7. Email you a success (or failure) report
+
+From this point on, every `git push origin main` triggers this entire flow automatically — no manual steps needed.
+
+---
+
+### Monitoring the Pipeline (Prometheus + Grafana)
+
+> Once deployments are automated, it's worth watching the cluster's health continuously rather than only checking `kubectl get pods` by hand.
+
+**Install Helm** (Kubernetes' package manager):
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version
+```
+
+**Create a monitoring namespace and install the full stack in one command:**
+```bash
+kubectl create namespace monitoring
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring
+```
+> 💡 This single command installs Prometheus, Grafana, Alertmanager, Node Exporter, and kube-state-metrics together — the alternative is hand-writing dozens of YAML files.
+
+**Wait for everything to come up:**
+```bash
+kubectl get pods -n monitoring -w
+```
+
+**Get the Grafana admin password:**
+```bash
+kubectl --namespace monitoring get secret monitoring-grafana \
+  -o jsonpath="{.data.admin-password}" | base64 -d && echo
+```
+
+**Access Grafana** (Kind only exposes the ports you explicitly mapped in `config.yml`, so a random NodePort usually isn't reachable — port-forward instead):
+```bash
+kubectl port-forward -n monitoring svc/monitoring-grafana 9091:80 --address 0.0.0.0
+```
+Then open `http://<EC2_PUBLIC_IP>:9091` (make sure port `9091` is open in your security group) and log in as `admin` with the password above.
+
+---
+
+### Real Issues You May Hit (and Fixes)
+
+These are genuine problems that come up with this exact setup — not hypothetical edge cases:
+
+- **`waitForQualityGate` hangs forever** → SonarQube's Quality Gate webhook (Step 11H) isn't configured, so Jenkins never receives the pass/fail result.
+- **Kubernetes deploy stage suddenly fails after working fine before** → the Kind cluster was recreated and its API server port changed. Regenerate the kubeconfig (`kind export kubeconfig --name sih-cluster`) and re-upload it to the `kubeconfig` credential **with "Replace" checked**.
+- **GitHub webhook shows "Failed to connect to host"** → check the Jenkins EC2 security group allows inbound `8080` from the internet; confirm locally first with `curl http://localhost:8080/login` on the Jenkins server.
+- **Docker build fails with "no space left on device"** → the AI service's TensorFlow-based image is large; run `docker system df` to see where space is going, then either expand the EBS volume (30 → 50 GB) or run `docker image prune -f` more aggressively.
+- **Jenkins build emails stop sending** → almost always "Use SMTP Authentication" being unchecked in **Manage Jenkins → System → E-mail Notification**, even if the credential itself is correct.
+- **Grafana unreachable from the browser even though the pod is Running** → Kind doesn't expose Kubernetes NodePorts automatically; use `kubectl port-forward --address 0.0.0.0` instead of relying on the NodePort URL.
+
+---
+
+
 
 > For quick local testing without Kubernetes, use Docker Compose.
 
